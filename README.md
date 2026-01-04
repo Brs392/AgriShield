@@ -9,8 +9,11 @@ AgriShield/
 │   ├── node_modules/
 │   ├── index.html
 │   ├── App.jsx           # Main homepage component
-│   ├── App.css
+│   ├── index.css
 │   ├── main.jsx
+│   ├── package-lock.json
+│   ├── postcss.config.js
+│   ├── tailwind.config.js
 │   ├── vite.config.js
 │   └── package.json
 │
