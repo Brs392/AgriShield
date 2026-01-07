@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Leaf, AlertTriangle, Camera, BookOpen, ShoppingCart, Building2, User, Menu, X, ArrowRight } from 'lucide-react';
+import RiskPrediction from './RiskPrediction';
 
 const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    // Handle hash-based routing on mount
+    if (window.location.hash === '#/risk-prediction') {
+      setCurrentPage('risk-prediction');
+    }
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
@@ -26,71 +33,116 @@ const App = () => {
       title: "Risk Prediction",
       description: "AI-powered crop failure risk analysis using weather, soil, and historical data",
       gradient: "from-red-500 to-orange-500",
-      link: "/risk-prediction"
+      link: "risk-prediction"
     },
     {
       icon: <Leaf className="w-10 h-10" />,
       title: "Crop Recommendation",
       description: "Get personalized crop suggestions based on soil conditions and climate",
       gradient: "from-green-500 to-emerald-500",
-      link: "/crop-recommendation"
+      link: "crop-recommendation"
     },
     {
       icon: <Camera className="w-10 h-10" />,
       title: "Disease Detection",
       description: "Upload plant images for instant disease identification and treatment",
       gradient: "from-purple-500 to-pink-500",
-      link: "/disease-detection"
+      link: "disease-detection"
     },
     {
       icon: <Cloud className="w-10 h-10" />,
       title: "Weather Forecast",
       description: "Real-time weather updates and agricultural advisories for your region",
       gradient: "from-blue-500 to-cyan-500",
-      link: "/weather-forecast"
+      link: "weather-forecast"
     },
     {
       icon: <BookOpen className="w-10 h-10" />,
       title: "Farming Tips",
       description: "Expert advice and best practices for sustainable agriculture",
       gradient: "from-yellow-500 to-amber-500",
-      link: "/farming-tips"
+      link: "farming-tips"
     },
     {
       icon: <ShoppingCart className="w-10 h-10" />,
       title: "Marketplace",
       description: "Buy and sell agricultural products directly with other farmers",
       gradient: "from-indigo-500 to-blue-500",
-      link: "/marketplace"
+      link: "marketplace"
     },
     {
       icon: <Building2 className="w-10 h-10" />,
       title: "Govt Schemes",
       description: "Access information about government schemes and subsidies",
       gradient: "from-teal-500 to-green-500",
-      link: "/govt-schemes"
+      link: "govt-schemes"
     },
     {
       icon: <User className="w-10 h-10" />,
       title: "My Profile",
       description: "Manage your farm details, crops, and personalized recommendations",
       gradient: "from-gray-600 to-gray-800",
-      link: "/profile"
+      link: "profile"
     }
   ];
 
   const handleFeatureClick = (link) => {
-    console.log(`Navigating to: ${link}`);
-    alert(`This will navigate to: ${link}\n(Individual pages not implemented yet)`);
+    if (link === 'risk-prediction') {
+      window.open(window.location.origin + '/#/risk-prediction', '_blank');
+    } else {
+      alert(`${link} page coming soon!\n(Currently only Risk Prediction is implemented)`);
+    }
   };
 
+  const goToHome = () => {
+    setCurrentPage('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // If on Risk Prediction page, show only that component
+  if (currentPage === 'risk-prediction') {
+    return (
+      <div>
+        {/* Navigation for Risk Prediction Page */}
+        <nav className="fixed w-full z-50 bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <button 
+                onClick={goToHome}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-2 rounded-lg">
+                  <Leaf className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  AgriShield
+                </span>
+              </button>
+              
+              <button
+                onClick={goToHome}
+                className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition flex items-center space-x-2"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <span>Back to Home</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        
+        <RiskPrediction />
+      </div>
+    );
+  }
+
+  // Homepage
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50">
       {/* Navigation */}
       <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-lg' : 'bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 cursor-pointer" onClick={goToHome}>
               <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-2 rounded-lg">
                 <Leaf className="w-6 h-6 text-white" />
               </div>
