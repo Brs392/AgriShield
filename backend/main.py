@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional
 import pickle
+from disease import router as disease_router
+
 
 # Import prediction function from predict.py
 from predict import predict_crop_failure, crop_list, state_list, district_list
@@ -39,6 +41,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(disease_router)
 
 # ============================================================================
 # PYDANTIC MODELS (Request/Response Schemas)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Cloud, Leaf, AlertTriangle, Camera, BookOpen, ShoppingCart, Building2, User, Menu, X, ArrowRight } from 'lucide-react';
 import RiskPrediction from './RiskPrediction';
+import DiseaseDetection from './DiseaseDetection';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -11,6 +12,9 @@ const App = () => {
     // Handle hash-based routing on mount
     if (window.location.hash === '#/risk-prediction') {
       setCurrentPage('risk-prediction');
+    }
+    else if (window.location.hash === '#/disease-detection') {
+      setCurrentPage('disease-detection');
     }
 
     const handleScroll = () => {
@@ -89,8 +93,10 @@ const App = () => {
   const handleFeatureClick = (link) => {
     if (link === 'risk-prediction') {
       window.open(window.location.origin + '/#/risk-prediction', '_blank');
+    } else if (link === 'disease-detection') {
+      window.open(window.location.origin + '/#/disease-detection', '_blank');
     } else {
-      alert(`${link} page coming soon!\n(Currently only Risk Prediction is implemented)`);
+      alert(`${link} page coming soon!\n(Currently only Risk Prediction and Disease Detection are implemented)`);
     }
   };
 
@@ -131,6 +137,42 @@ const App = () => {
         </nav>
         
         <RiskPrediction />
+      </div>
+    );
+  }
+
+  // If on Disease Detection page, show only that component
+  if (currentPage === 'disease-detection') {
+    return (
+      <div>
+        {/* Navigation for Disease Detection Page */}
+        <nav className="fixed w-full z-50 bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <button 
+                onClick={goToHome}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-2 rounded-lg">
+                  <Leaf className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  AgriShield
+                </span>
+              </button>
+              
+              <button
+                onClick={goToHome}
+                className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition flex items-center space-x-2"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <span>Back to Home</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        
+        <DiseaseDetection />
       </div>
     );
   }
