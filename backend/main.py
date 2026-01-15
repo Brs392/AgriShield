@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 import pickle
 from disease import router as disease_router
+from crop_recommendation_api import router as crop_recommendation_router    
 
 
 # Import prediction function from predict.py
@@ -42,7 +43,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(disease_router)
-
+app.include_router(crop_recommendation_router)
 # ============================================================================
 # PYDANTIC MODELS (Request/Response Schemas)
 # ============================================================================

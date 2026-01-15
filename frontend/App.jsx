@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Cloud, Leaf, AlertTriangle, Camera, BookOpen, ShoppingCart, Building2, User, Menu, X, ArrowRight } from 'lucide-react';
 import RiskPrediction from './RiskPrediction';
 import DiseaseDetection from './DiseaseDetection';
+import CropRecommendation from './CropRecommendation';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
@@ -12,6 +13,9 @@ const App = () => {
     // Handle hash-based routing on mount
     if (window.location.hash === '#/risk-prediction') {
       setCurrentPage('risk-prediction');
+    }
+    else if (window.location.hash === '#/crop-recommendation') {
+      setCurrentPage('crop-recommendation');
     }
     else if (window.location.hash === '#/disease-detection') {
       setCurrentPage('disease-detection');
@@ -92,11 +96,13 @@ const App = () => {
 
   const handleFeatureClick = (link) => {
     if (link === 'risk-prediction') {
-      window.open(window.location.origin + '/#/risk-prediction', '_blank');
+       window.open(window.location.origin + '/#/risk-prediction', '_blank');
+    } else if (link === 'crop-recommendation') {
+      window.open(window.location.origin + '/#/crop-recommendation', '_blank');
     } else if (link === 'disease-detection') {
       window.open(window.location.origin + '/#/disease-detection', '_blank');
     } else {
-      alert(`${link} page coming soon!\n(Currently only Risk Prediction and Disease Detection are implemented)`);
+      alert(`${link} page coming soon!\n(Currently only Risk Prediction, Crop Recommendation, and Disease Detection are implemented)`);
     }
   };
 
@@ -173,6 +179,34 @@ const App = () => {
         </nav>
         
         <DiseaseDetection />
+      </div>
+    );
+  }
+
+  // If on Crop Recommendation page, show only that component
+  if (currentPage === 'crop-recommendation') {
+    return (
+      <div>
+        {/* Navigation for Crop Recommendation Page */}
+        <nav className="fixed w-full z-50 bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <button 
+                onClick={goToHome}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-2 rounded-lg">
+                  <Leaf className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  AgriShield
+                </span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        
+        <CropRecommendation onBack={goToHome} />
       </div>
     );
   }
