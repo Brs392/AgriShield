@@ -38,7 +38,7 @@ const getLaymanDiseaseName = (technicalName) => {
     "Tomato__Tomato_YellowLeaf__Curl_Virus": "Tomato Yellow Leaf Curl Virus",
     "Tomato_Bacterial_spot": "Tomato Bacterial Spot",
     "Tomato_Early_blight": "Tomato Early Blight",
-    "Tomato_healthy": "Healthy Tomato Plant",
+    "Tomato_healthy": "Healthya Tomato Plant",
     "Tomato_Late_blight": "Tomato Late Blight",
     "Tomato_Leaf_Mold": "Tomato Leaf Mold",
     "Tomato_Septoria_leaf_spot": "Tomato Septoria Leaf Spot",

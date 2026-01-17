@@ -177,7 +177,7 @@ const RiskPrediction = () => {
             </h1>
           </div>
           <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-            AI-powered risk analysis using real government data, weather patterns, and soil information
+            ML based risk analysis using real government data, weather patterns, and soil information
           </p>
           
           {/* Stats Banner */}
@@ -324,7 +324,7 @@ const RiskPrediction = () => {
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
                 <span className="text-2xl font-bold text-green-600">2</span>
               </div>
-              <h4 className="font-bold text-gray-900 mb-2">AI Analysis</h4>
+              <h4 className="font-bold text-gray-900 mb-2">ML Analysis</h4>
               <p className="text-sm text-gray-600">Our ML model analyzes 20+ years of agricultural data</p>
             </div>
             <div className="text-center">

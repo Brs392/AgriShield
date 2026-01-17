@@ -4,6 +4,7 @@ import RiskPrediction from './RiskPrediction';
 import DiseaseDetection from './DiseaseDetection';
 import CropRecommendation from './CropRecommendation';
 
+
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +40,7 @@ const App = () => {
     {
       icon: <AlertTriangle className="w-10 h-10" />,
       title: "Risk Prediction",
-      description: "AI-powered crop failure risk analysis using weather, soil, and historical data",
+      description: "ML-powered crop failure risk analysis using weather, soil, and historical data",
       gradient: "from-red-500 to-orange-500",
       link: "risk-prediction"
     },
@@ -101,8 +102,10 @@ const App = () => {
       window.open(window.location.origin + '/#/crop-recommendation', '_blank');
     } else if (link === 'disease-detection') {
       window.open(window.location.origin + '/#/disease-detection', '_blank');
+    } else if (link === 'govt-schemes') {
+      setCurrentPage('govt-schemes');
     } else {
-      alert(`${link} page coming soon!\n(Currently only Risk Prediction, Crop Recommendation, and Disease Detection are implemented)`);
+      alert(`${link} page coming soon!\n(Currently only Risk Prediction, Crop Recommendation, Disease Detection, and Govt Schemes are implemented)`);
     }
   };
 
@@ -211,7 +214,41 @@ const App = () => {
     );
   }
 
-  // Homepage
+  // If on Govt Schemes page, show only that component
+  if (currentPage === 'govt-schemes') {
+    return (
+      <div>
+        {/* Navigation for Govt Schemes Page */}
+        <nav className="fixed w-full z-50 bg-white shadow-lg">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <button 
+                onClick={goToHome}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-2 rounded-lg">
+                  <Leaf className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  AgriShield
+                </span>
+              </button>
+              
+              <button
+                onClick={goToHome}
+                className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition flex items-center space-x-2"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                <span>Back to Home</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        
+        <SchemesPage />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50">
       {/* Navigation */}
@@ -281,7 +318,7 @@ const App = () => {
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
                 Protect Your Crops with
-                <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent"> AI Intelligence</span>
+                <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent"> ML Intelligence</span>
               </h1>
               <p className="text-xl text-gray-600">
                 Predict crop failures, detect diseases, get weather alerts, and make data-driven farming decisions with AgriShield's intelligent platform.
@@ -317,7 +354,7 @@ const App = () => {
                 About <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">AgriShield</span>
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                AgriShield is an intelligent agriculture platform designed to revolutionize farming through the power of artificial intelligence and data-driven insights. We empower farmers with cutting-edge technology to predict crop failures, detect diseases early, and make informed decisions that protect their livelihoods.
+                AgriShield is an intelligent agriculture platform designed to revolutionize farming through the power of machine learning and data-driven insights. We empower farmers with cutting-edge technology to predict crop failures, detect diseases early, and make informed decisions that protect their livelihoods.
               </p>
               <p className="text-lg text-gray-600 leading-relaxed">
                 Our platform combines weather data, soil analysis, historical patterns, and machine learning to provide accurate risk assessments and actionable recommendations. From small-scale farmers to large agricultural enterprises, AgriShield helps reduce losses, optimize yields, and promote sustainable farming practices.
@@ -326,7 +363,7 @@ const App = () => {
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2 text-green-600">
                     <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                    <span className="font-semibold">AI-Powered Predictions</span>
+                    <span className="font-semibold">ML-Powered Predictions</span>
                   </div>
                   <div className="flex items-center space-x-2 text-green-600">
                     <div className="w-2 h-2 bg-green-600 rounded-full"></div>
@@ -419,7 +456,7 @@ const App = () => {
                 <span className="text-xl font-bold">AgriShield</span>
               </div>
               <p className="text-gray-400 mb-4">
-                Empowering farmers with AI-driven insights for better crop management and sustainable agriculture.
+                Empowering farmers with ML-driven insights for better crop management and sustainable agriculture.
               </p>
             </div>
             <div>
