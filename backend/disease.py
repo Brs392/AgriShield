@@ -4,21 +4,23 @@ import numpy as np
 import tensorflow as tf
 import io
 import json
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
 
 router = APIRouter(
     prefix="/api",
     tags=["Disease Detection"]
 )
 
-# Load model once
+# Load models
 model = tf.keras.models.load_model("../models/best_cpu_model.keras")
+plant_filter = MobileNetV2(weights="imagenet")
 
-# ✅ Load class indices dynamically (MATCHES TRAINED MODEL)
+# Load class indices
 with open("../models/class_indices.json", "r") as f:
     class_indices = json.load(f)
-
 CLASS_NAMES = {v: k for k, v in class_indices.items()}
 
+# Disease information dictionary (DISEASE_INFO) remains same as your code
 # Comprehensive disease information with descriptions and treatments
 DISEASE_INFO = {
     "Pepper__bell___Bacterial_spot": {
@@ -83,12 +85,41 @@ DISEASE_INFO = {
     }
 }
 
+# Keywords for plant detection
+PLANT_KEYWORDS = [
+    "plant", "leaf", "tree", "flower", "fruit", "vegetable",
+    "pepper", "tomato", "potato", "leaflet", "foliage", "herb"
+]
+
 def preprocess_image(image):
-    # ✅ FIXED: must match training image size
     image = image.resize((160, 160))
     image = np.array(image) / 255.0
     image = np.expand_dims(image, axis=0)
     return image
+
+def is_plant_image(image: Image.Image) -> bool:
+    # Resize for MobileNetV2
+    img = image.resize((224, 224))
+    arr = np.array(img)
+    arr = np.expand_dims(arr, axis=0)
+    arr = preprocess_input(arr)
+
+    preds = plant_filter.predict(arr)
+    decoded = decode_predictions(preds, top=10)[0]
+
+    # Step 1: keyword match
+    for _, label, _ in decoded:
+        if any(keyword in label.lower() for keyword in PLANT_KEYWORDS):
+            return True
+
+    # Step 2: green pixel ratio fallback
+    arr_rgb = np.array(image)
+    green_ratio = np.mean((arr_rgb[:,:,1] > arr_rgb[:,:,0]) & (arr_rgb[:,:,1] > arr_rgb[:,:,2]))
+    if green_ratio > 0.25:
+        return True
+
+    # Step 3: otherwise invalid
+    return False
 
 @router.post("/detect-disease")
 async def detect_disease(file: UploadFile = File(...)):
@@ -97,21 +128,31 @@ async def detect_disease(file: UploadFile = File(...)):
 
     try:
         image = Image.open(io.BytesIO(await file.read())).convert("RGB")
-        img = preprocess_image(image)
 
+        # ✅ Step A: Plant/Leaf validator
+        if not is_plant_image(image):
+            return {"disease": "invalid", "reason": "Not a plant or leaf image"}
+
+        # ✅ Step B: Predict disease
+        img = preprocess_image(image)
         preds = model.predict(img)
         idx = int(np.argmax(preds))
-        confidence = float(np.max(preds))
-        
+        confidence = float(np.max(preds))  # between 0-1
+
+        # ✅ Step C: Confidence threshold check
+        if confidence < 0.5:
+            return {"disease": "invalid", "reason": "Model confidence too low (<50%)"}
+
+        # Step D: Return disease info
         disease_name = CLASS_NAMES[idx]
         disease_data = DISEASE_INFO.get(disease_name, {
-            "description": "Plant disease detected. Consult with a plant disease specialist for proper diagnosis.",
-            "treatment": "Follow general plant care practices and consult local agricultural extension for specific recommendations."
+            "description": "Plant disease detected. Consult a plant specialist.",
+            "treatment": "Follow general plant care practices."
         })
 
         return {
             "disease": disease_name,
-            "confidence": f"{confidence * 100:.2f}%",
+            "confidence": f"{confidence*100:.2f}%",
             "description": disease_data["description"],
             "treatment": disease_data["treatment"]
         }

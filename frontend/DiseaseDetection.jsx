@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Camera, Upload, Leaf, AlertCircle, CheckCircle, Info,
+  Camera, Upload, Leaf, AlertCircle, AlertTriangle, CheckCircle, Info,
   Droplets, Bug, Wind, Sun, Shield, Activity, BookOpen,
   ChevronRight, RotateCcw, Image, ChevronDown, ChevronUp,
   ChevronLeft, Microscope, Thermometer, Eye
@@ -523,79 +523,125 @@ const getDiseaseDescription = (technicalName) => {
           
         {/* Results Section */}
 {/* Results Section */}
-{result && (
-  <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8 animate-fade-in">
-    <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
-      <BookOpen className="w-8 h-8 mr-3 text-green-600" />
-      Detailed Disease Analysis
-    </h2>
+{/* Results Section */}
+{result && (() => {
+  const isInvalidImage = result.disease === "invalid";
 
-    {/* Disease Name & Confidence */}
-    <div className="bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl p-8 text-white shadow-2xl mb-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="bg-white/20 p-4 rounded-full">
-            <AlertCircle className="w-12 h-12" />
+  return (
+    <>
+      {/* ================= VALID PLANT RESULT ================= */}
+      {!isInvalidImage && (
+        <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8 animate-fade-in">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
+            <BookOpen className="w-8 h-8 mr-3 text-green-600" />
+            Detailed Disease Analysis
+          </h2>
+
+          {/* Disease Name & Confidence */}
+          <div className="bg-gradient-to-br from-green-400 to-emerald-600 rounded-2xl p-8 text-white shadow-2xl mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="bg-white/20 p-4 rounded-full">
+                  <AlertCircle className="w-12 h-12" />
+                </div>
+                <div>
+                  <p className="text-sm text-green-100">Detected Disease</p>
+                  <h3 className="text-4xl font-bold">
+                    {getLaymanDiseaseName(result.disease)}
+                  </h3>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-green-100">Confidence</p>
+                <p className="text-5xl font-bold">{result.confidence}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-green-100">Detected Disease</p>
-            <h3 className="text-4xl font-bold">{getLaymanDiseaseName(result.disease)}</h3>
+
+          {/* Combined Information Box */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-blue-300 shadow-lg">
+            {/* About the Disease */}
+            <div className="mb-8">
+              <h4 className="font-bold text-2xl mb-4 flex items-center text-blue-900">
+                <Info className="w-7 h-7 mr-3" />
+                About This Disease
+              </h4>
+              <div className="bg-white rounded-xl p-6 shadow-md">
+                <p className="text-gray-700 leading-relaxed text-lg">
+                  {result.description}
+                </p>
+              </div>
+            </div>
+
+            {/* Treatment & Prevention */}
+            <div>
+              <h4 className="font-bold text-2xl mb-4 flex items-center text-green-900">
+                <Shield className="w-7 h-7 mr-3" />
+                Treatment & Prevention
+              </h4>
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-300 shadow-md">
+                <p className="text-gray-800 leading-relaxed text-lg whitespace-pre-line">
+                  {result.treatment}
+                </p>
+              </div>
+            </div>
+
+            {/* Important Note */}
+            <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-5 rounded-r-xl">
+              <div className="flex items-start">
+                <AlertCircle className="w-6 h-6 text-yellow-600 mr-3 mt-0.5" />
+                <div>
+                  <h5 className="font-bold text-yellow-900 mb-2">
+                    Important Note
+                  </h5>
+                  <p className="text-yellow-800 text-sm">
+                    {result.disease.includes("healthy")
+                      ? "Keep up the excellent work! Regular monitoring and preventive care are essential for maintaining healthy plants."
+                      : "Early detection and prompt action are crucial. Always remove and destroy infected plant material (don't compost). For severe infections, consult your local agricultural extension office."}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-green-100">Confidence</p>
-          <p className="text-5xl font-bold">{result.confidence}</p>
-        </div>
-      </div>
-    </div>
+      )}
 
-    {/* Combined Information Box */}
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border-2 border-blue-300 shadow-lg">
-      {/* About the Disease */}
-      <div className="mb-8">
-        <h4 className="font-bold text-2xl mb-4 flex items-center text-blue-900">
-          <Info className="w-7 h-7 mr-3" />
-          About This Disease
-        </h4>
-        <div className="bg-white rounded-xl p-6 shadow-md">
-          <p className="text-gray-700 leading-relaxed text-lg">
-            {result.description}
-          </p>
-        </div>
-      </div>
+      {/* ================= INVALID IMAGE RESULT ================= */}
+      {isInvalidImage && (
+        <div className="bg-red-50 border-2 border-red-400 rounded-2xl shadow-2xl p-8 mb-8 animate-slide-down">
+          <div className="flex items-center mb-6">
+            <AlertTriangle className="w-10 h-10 text-red-600 mr-4" />
+            <h2 className="text-3xl font-bold text-red-700">
+              Invalid Image Detected
+            </h2>
+          </div>
 
-      {/* Treatment & Prevention */}
-      <div>
-        <h4 className="font-bold text-2xl mb-4 flex items-center text-green-900">
-          <Shield className="w-7 h-7 mr-3" />
-          Treatment & Prevention
-        </h4>
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-300 shadow-md">
-          <p className="text-gray-800 leading-relaxed text-lg whitespace-pre-line">
-            {result.treatment}
-          </p>
-        </div>
-      </div>
-
-      {/* Important Note */}
-      <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-500 p-5 rounded-r-xl">
-        <div className="flex items-start">
-          <AlertCircle className="w-6 h-6 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
-          <div>
-            <h5 className="font-bold text-yellow-900 mb-2">Important Note</h5>
-            <p className="text-yellow-800 text-sm">
-              {result.disease.includes('healthy') 
-                ? "Keep up the excellent work! Regular monitoring and preventive care are essential for maintaining healthy plants."
-                : "Early detection and prompt action are crucial. Always remove and destroy infected plant material (don't compost). For severe infections, consult your local agricultural extension office for region-specific recommendations."}
+          <div className="bg-white rounded-xl p-6 shadow-md mb-6">
+            <p className="text-red-700 text-lg font-medium">
+              🚫 The uploaded image does not appear to be a plant, leaf, or fruit.
             </p>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-        </div>
 
+          <div className="bg-red-100 rounded-xl p-6 border border-red-300">
+            <h4 className="font-bold text-2xl mb-4 flex items-center text-red-800">
+              <Info className="w-7 h-7 mr-3" />
+              Suggestions & Advice
+            </h4>
+            <ul className="list-disc list-inside text-red-900 text-lg space-y-2">
+              <li>Upload a clear image of a plant leaf or fruit.</li>
+              <li>Ensure good lighting and sharp focus.</li>
+              <li>Avoid images with people, animals, or cluttered backgrounds.</li>
+              <li>Make sure the plant occupies most of the frame.</li>
+            </ul>
+          </div>
+        </div>
+      )}
+          </>
+  );
+})()}        
+
+
+</div>
 
       <style jsx>{`
         @keyframes fade-in {
