@@ -219,14 +219,14 @@ const getDiseaseDescription = (technicalName) => {
             </h1>
           </div>
           <p className="text-xl text-gray-200 max-w-3xl mx-auto animate-fade-in">
-            ML-powered diagnosis using advanced computer vision to identify plant diseases instantly
+            ML-powered diagnosis using pattern recognition to identify plant diseases instantly
           </p>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
             {[
               { icon: Leaf, value: "15+", label: "Diseases Detected", color: "green" },
-              { icon: Activity, value: "98%", label: "Accuracy", color: "blue" },
+              { icon: Activity, value: "96%", label: "Accuracy", color: "blue" },
               { icon: Camera, value: "Instant", label: "Analysis", color: "purple" },
               { icon: Shield, value: "Expert", label: "Recommendations", color: "yellow" }
             ].map((stat, idx) => (
@@ -436,7 +436,7 @@ const getDiseaseDescription = (technicalName) => {
               <div className="grid md:grid-cols-3 gap-8">
                 {[
                   { icon: Upload, title: "Upload Image", desc: "Take a clear photo of the affected plant leaf and upload it", color: "green" },
-                  { icon: Activity, title: "ML Analysis", desc: "Our deep learning model analyzes using computer vision", color: "blue" },
+                  { icon: Activity, title: "ML Analysis", desc: "Our Machine learning model analyzes the uploaded image", color: "blue" },
                   { icon: Shield, title: "Get Results", desc: "Receive instant diagnosis with treatment recommendations", color: "purple" }
                 ].map((step, idx) => (
                   <div key={idx} className="text-center transform hover:scale-110 transition">

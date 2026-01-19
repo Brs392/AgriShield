@@ -322,7 +322,7 @@ const App = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="inline-block px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                🌾 Smart Farming Solutions
+                🌾 Your Farm, Our Shield
               </div>
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
                 Protect Your Crops with
