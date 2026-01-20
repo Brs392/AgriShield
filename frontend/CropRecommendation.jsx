@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Leaf, Droplets, ThermometerSun, Wind, FlaskConical, ArrowLeft, Award, Trophy, Sprout, AlertTriangle } from 'lucide-react';
+import { Leaf, Droplets, ThermometerSun, Wind, FlaskConical, ArrowLeft, Award, Trophy, Sprout, AlertTriangle, Camera, Activity, Shield, BookOpen, ChevronRight, ChevronLeft, Eye, Microscope } from 'lucide-react';
 
-// API Service
+import Wheat from '../data/images/Wheat.jpeg'
+import Potato from '../data/images/Potato.jpeg';
+import cotton from '../data/images/cotton.jpeg';
+import Rice from '../data/images/Rice.jpeg';
+import tomato from '../data/images/tomato.jpeg';
+import soyabean from '../data/images/soyabean.jpeg';
+import maize from '../data/images/maize.jpeg';
+
+
+// API Service (unchanged)
 const API_URL = 'http://localhost:8000';
 
 const cropAPI = {
@@ -26,11 +35,101 @@ const cropAPI = {
 };
 
 const sampleData = {
-  rice: { N: 90, P: 42, K: 43, temperature: 20.8, humidity: 82.0, ph: 6.5, rainfall: 202.9 },
-  wheat: { N: 50, P: 40, K: 30, temperature: 18.0, humidity: 65.0, ph: 7.0, rainfall: 500.0 },
-  cotton: { N: 100, P: 45, K: 50, temperature: 25.0, humidity: 70.0, ph: 6.8, rainfall: 800.0 }
+  rice: { 
+    N: 90, 
+    P: 42, 
+    K: 43, 
+    temperature: 20.8, 
+    humidity: 82.0, 
+    ph: 6.5, 
+    rainfall: 202.9 
+  },
+  wheat: { 
+    N: 60, 
+    P: 35, 
+    K: 40, 
+    temperature: 18.0, 
+    humidity: 65.0, 
+    ph: 7.0, 
+    rainfall: 500.0 
+  },
+  cotton: { 
+    N: 120, 
+    P: 50, 
+    K: 60, 
+    temperature: 25.0, 
+    humidity: 70.0, 
+    ph: 6.8, 
+    rainfall: 800.0 
+  }
 };
 
+// Common crops showcase with real images (using Unsplash for high-quality, free images)
+const commonCrops = [
+  {
+    name: "Rice",
+    image: Rice,
+    shortDesc: "Staple crop thriving in flooded fields",
+    description: "Rice is a water-loving cereal grain that forms the basis of diets worldwide. It requires specific soil nutrients and climate conditions for optimal yield.",
+    idealConditions: "High humidity (80-90%), moderate temperature (20-25°C), acidic soil (pH 6-7), abundant rainfall (200-300mm).",
+    benefits: "High yield potential, drought-resistant varieties available, excellent source of carbohydrates.",
+    tips: "Ensure proper water management. Rotate with legumes. Use nitrogen-rich fertilizers."
+  },
+  {
+    name: "Wheat",
+    image: Wheat,
+    shortDesc: "Versatile grain for bread and more",
+    description: "Wheat is a major cereal crop used for flour, bread, and animal feed. It adapts to various climates but prefers temperate conditions.",
+    idealConditions: "Cool temperatures (15-20°C), moderate humidity (60-70%), neutral soil (pH 6-7), seasonal rainfall (400-600mm).",
+    benefits: "High protein content, versatile uses, good for rotation with other crops.",
+    tips: "Plant in well-drained soil. Monitor for rust diseases. Harvest when grains are hard."
+  },
+  {
+    name: "Cotton",
+    image: cotton,
+    shortDesc: "Fiber crop for textiles",
+    description: "Cotton is a soft, fluffy staple fiber that grows in a boll around the seeds of the cotton plant. It's a major cash crop globally.",
+    idealConditions: "Warm temperatures (25-30°C), moderate humidity (60-70%), slightly acidic soil (pH 6-7), adequate rainfall (700-900mm).",
+    benefits: "High economic value, drought-tolerant varieties, biodegradable fiber.",
+    tips: "Control pests like bollworms. Ensure proper spacing. Harvest when bolls open."
+  },
+  {
+    name: "Maize",
+    image: maize,
+    shortDesc: "High-yield grain for food and feed",
+    description: "Maize, also known as corn, is a versatile cereal crop used for human consumption, animal feed, and industrial products.",
+    idealConditions: "Warm temperatures (20-30°C), moderate humidity (50-70%), neutral soil (pH 6-7), adequate rainfall (500-800mm).",
+    benefits: "High caloric content, drought-tolerant hybrids, supports biodiversity in rotations.",
+    tips: "Plant in rows for better airflow. Monitor for corn borers. Harvest when kernels are mature."
+  },
+  {
+    name: "Soybean",
+    image: soyabean,
+    shortDesc: "Protein-rich legume for diverse uses",
+    description: "Soybeans are legumes that fix nitrogen in the soil, making them excellent for sustainable farming and providing high-protein food.",
+    idealConditions: "Warm temperatures (20-30°C), moderate humidity (60-80%), slightly acidic soil (pH 6-7), even rainfall (600-1000mm).",
+    benefits: "Nitrogen fixation, high protein yield, oil production, improves soil health.",
+    tips: "Inoculate seeds with rhizobia. Rotate with cereals. Harvest when pods are dry."
+  },
+  {
+    name: "Potato",
+    image: Potato,
+    shortDesc: "Tuber crop for global consumption",
+    description: "Potatoes are starchy tubers that grow underground and are a staple food in many cultures, adaptable to various climates.",
+    idealConditions: "Cool temperatures (15-20°C), high humidity (70-80%), loose soil (pH 5-6), moderate rainfall (500-700mm).",
+    benefits: "High caloric density, quick growth cycle, versatile in cooking, disease-resistant varieties.",
+    tips: "Hill soil around plants. Avoid waterlogging. Store in cool, dark places post-harvest."
+  },
+  {
+    name: "Tomato",
+    image: tomato,
+    shortDesc: "Juicy fruit vegetable for fresh and processed use",
+    description: "Tomatoes are warm-season crops grown for their edible fruits, used in salads, sauces, and processing industries.",
+    idealConditions: "Warm temperatures (20-25°C), moderate humidity (60-70%), well-drained soil (pH 6-7), consistent rainfall (600-800mm).",
+    benefits: "Rich in vitamins, high market value, supports pollinators, greenhouse varieties extend season.",
+    tips: "Provide support with stakes. Prune suckers. Monitor for blight diseases."
+  }
+];
 const CropRecommendation = ({ onBack }) => {
   const [formData, setFormData] = useState({
     N: '', P: '', K: '', temperature: '', humidity: '', ph: '', rainfall: ''
@@ -41,6 +140,23 @@ const CropRecommendation = ({ onBack }) => {
   const [error, setError] = useState(null);
   const [backendStatus, setBackendStatus] = useState(null);
   const [selectedCrop, setSelectedCrop] = useState(0);
+  const [flippedCards, setFlippedCards] = useState({});
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const toggleCard = (index) => {
+    setFlippedCards(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % commonCrops.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + commonCrops.length) % commonCrops.length);
+  };
 
   useEffect(() => {
     checkBackend();
@@ -134,431 +250,419 @@ const CropRecommendation = ({ onBack }) => {
   const currentCropDetails = selectedCrop === 0 ? result?.crop_details : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={onBack}
-            className="flex items-center text-green-600 hover:text-green-700 mb-4 transition-all hover:translate-x-[-4px]"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            <span className="font-medium">Back to Home</span>
-          </button>
-          
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="bg-green-600 p-3 rounded-2xl mr-4">
-                <Leaf className="w-10 h-10 text-white" />
-              </div>
-              <h1 className="text-5xl font-bold text-green-800">Crop Recommendation</h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+      {/* Hero Section */}
+      <div 
+        className="relative bg-cover bg-center py-20 px-4"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?w=1200&h=400&fit=crop)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="flex items-center justify-center space-x-3 mb-6 animate-fade-in">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-4 rounded-2xl animate-pulse">
+              <Leaf className="w-12 h-12 text-white" />
             </div>
-            <p className="text-green-700 text-lg max-w-2xl mx-auto">
-              ML-powered crop suggestions based on soil and climate analysis
-            </p>
-            
-            {backendStatus && (
-              <div className={`inline-flex items-center gap-2 mt-4 px-5 py-2.5 rounded-full text-sm font-medium ${
-                backendStatus.model_loaded 
-                  ? 'bg-green-100 text-green-700 border border-green-200' 
-                  : 'bg-yellow-100 text-yellow-700 border border-yellow-200'
-              }`}>
-                <div className={`w-2 h-2 rounded-full ${backendStatus.model_loaded ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                {backendStatus.model_loaded ? 'ML Model Ready' : 'Model Not Loaded'}
-              </div>
-            )}
+            <h1 className="text-5xl md:text-6xl font-bold text-white drop-shadow-lg">
+              Crop Recommendation
+            </h1>
           </div>
-        </div>
+          <p className="text-xl text-gray-200 max-w-3xl mx-auto animate-fade-in">
+            ML-powered crop suggestions based on soil and climate analysis for optimal yield
+          </p>
 
-        <div className="grid lg:grid-cols-5 gap-6">
-          
-          {/* Input Form - 2 columns */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-            <div className="flex items-center mb-6">
-              <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-2 rounded-lg mr-3">
-                <FlaskConical className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800">Input Data</h2>
-            </div>
-            
-            {/* Sample Buttons */}
-            <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-              <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                <Sprout className="w-4 h-4 mr-2 text-blue-600" />
-                Quick Test Samples:
-              </p>
-              <div className="flex gap-2 flex-wrap">
-                <button 
-                  onClick={() => loadSample('rice')} 
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 text-sm font-medium transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  🌾 Rice
-                </button>
-                <button 
-                  onClick={() => loadSample('wheat')} 
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 text-sm font-medium transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  🌾 Wheat
-                </button>
-                <button 
-                  onClick={() => loadSample('cotton')} 
-                  className="px-4 py-2 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-lg hover:from-pink-600 hover:to-rose-700 text-sm font-medium transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-                >
-                  🌸 Cotton
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              {/* NPK Section */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100">
-                <h3 className="font-semibold text-green-800 mb-4 flex items-center text-base">
-                  <FlaskConical className="w-5 h-5 mr-2" />
-                  Soil Nutrients (kg/ha)
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Nitrogen (N)</label>
-                    <input 
-                      type="number" 
-                      name="N" 
-                      value={formData.N} 
-                      onChange={handleChange} 
-                      step="0.1" 
-                      min="0" 
-                      max="200" 
-                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                      placeholder="0-200" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Phosphorus (P)</label>
-                    <input 
-                      type="number" 
-                      name="P" 
-                      value={formData.P} 
-                      onChange={handleChange} 
-                      step="0.1" 
-                      min="0" 
-                      max="200" 
-                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                      placeholder="0-200" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Potassium (K)</label>
-                    <input 
-                      type="number" 
-                      name="K" 
-                      value={formData.K} 
-                      onChange={handleChange} 
-                      step="0.1" 
-                      min="0" 
-                      max="200" 
-                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                      placeholder="0-200" 
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Climate Section */}
-              <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-5 border border-blue-100">
-                <h3 className="font-semibold text-blue-800 mb-4 flex items-center text-base">
-                  <ThermometerSun className="w-5 h-5 mr-2" />
-                  Climate Conditions
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Temperature (°C)</label>
-                    <input 
-                      type="number" 
-                      name="temperature" 
-                      value={formData.temperature} 
-                      onChange={handleChange} 
-                      step="0.1" 
-                      min="0" 
-                      max="50" 
-                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" 
-                      placeholder="0-50" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                      <Wind className="w-4 h-4 mr-1" />Humidity (%)
-                    </label>
-                    <input 
-                      type="number" 
-                      name="humidity" 
-                      value={formData.humidity} 
-                      onChange={handleChange} 
-                      step="0.1" 
-                      min="0" 
-                      max="100" 
-                      className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" 
-                      placeholder="0-100" 
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* pH and Rainfall */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Soil pH Level</label>
-                  <input 
-                    type="number" 
-                    name="ph" 
-                    value={formData.ph} 
-                    onChange={handleChange} 
-                    step="0.1" 
-                    min="0" 
-                    max="14" 
-                    className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                    placeholder="0-14" 
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center">
-                    <Droplets className="w-4 h-4 mr-1" />Rainfall (mm)
-                  </label>
-                  <input 
-                    type="number" 
-                    name="rainfall" 
-                    value={formData.rainfall} 
-                    onChange={handleChange} 
-                    step="0.1" 
-                    min="0" 
-                    max="3000" 
-                    className="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all" 
-                    placeholder="0-3000" 
-                  />
-                </div>
-              </div>
-
-              <button 
-                onClick={handleSubmit} 
-                disabled={loading} 
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3.5 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] flex items-center justify-center"
+          {/* Updated Stats - More relevant to crop recommendation */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+            {[
+             { icon: BookOpen, value: "Research", label: "Based", color: "indigo" },
+              { icon: Activity, value: "94%", label: "Accuracy", color: "blue" },
+              { icon: Sprout, value: "Sustainable", label: "Farming", color: "purple" },
+              { icon: Shield, value: "Climate", label: "Adaptation", color: "yellow" }
+            ].map((stat, idx) => (
+              <div 
+                key={idx} 
+                className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 hover:bg-white/20 transition transform hover:scale-105 cursor-pointer"
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Analyzing Data...
-                  </>
-                ) : (
-                  <>
-                    <Leaf className="w-5 h-5 mr-2" />
-                    Get ML Recommendation
-                  </>
-                )}
-              </button>
-            </div>
-
-            {error && (
-              <div className="mt-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-                <div className="flex items-start">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-red-700 font-semibold">Error</p>
-                    <p className="text-red-600 text-sm mt-1">{error}</p>
-                    <p className="text-xs text-red-500 mt-2">Make sure backend is running: uvicorn main:app --reload</p>
-                  </div>
-                </div>
+                <stat.icon className={`w-8 h-8 text-${stat.color}-300 mx-auto mb-2`} />
+                <div className="text-3xl font-bold text-white">{stat.value}</div>
+                <div className="text-sm text-gray-200">{stat.label}</div>
               </div>
-            )}
-          </div>
-
-          {/* Results - 3 columns */}
-          <div className="lg:col-span-3 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-            <div className="flex items-center mb-6">
-              <div className="bg-gradient-to-br from-emerald-500 to-green-600 p-2 rounded-lg mr-3">
-                <Trophy className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-800">Recommendations</h2>
-            </div>
-            
-            {!result && !loading && (
-              <div className="text-center py-20 text-gray-400">
-                <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Leaf className="w-12 h-12 opacity-30" />
-                </div>
-                <p className="text-lg font-medium">Enter soil and climate data to get started</p>
-                <p className="text-sm mt-2">Try our quick test samples above</p>
-              </div>
-            )}
-
-            {result && (
-              <div className="space-y-6">
-                {/* Top 3 Crops Cards */}
-                <div className="space-y-3">
-                  {topCrops.map((crop, index) => (
-                    <div
-                      key={index}
-                      onClick={() => setSelectedCrop(index)}
-                      className={`cursor-pointer rounded-2xl p-5 transition-all transform hover:scale-[1.01] ${
-                        selectedCrop === index
-                          ? 'bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-2xl ring-4 ring-green-200'
-                          : 'bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-800 shadow-md hover:shadow-lg border border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          {crop.rank === 1 && (
-                            <div className={`p-3 rounded-xl ${selectedCrop === index ? 'bg-yellow-400 bg-opacity-30' : 'bg-yellow-100'}`}>
-                              <Trophy className={`w-7 h-7 ${selectedCrop === index ? 'text-yellow-200' : 'text-yellow-500'}`} />
-                            </div>
-                          )}
-                          {crop.rank === 2 && (
-                            <div className={`p-3 rounded-xl ${selectedCrop === index ? 'bg-white bg-opacity-20' : 'bg-gray-200'}`}>
-                              <Award className={`w-7 h-7 ${selectedCrop === index ? 'text-gray-100' : 'text-gray-500'}`} />
-                            </div>
-                          )}
-                          {crop.rank === 3 && (
-                            <div className={`p-3 rounded-xl ${selectedCrop === index ? 'bg-orange-400 bg-opacity-30' : 'bg-orange-100'}`}>
-                              <Award className={`w-7 h-7 ${selectedCrop === index ? 'text-orange-200' : 'text-orange-500'}`} />
-                            </div>
-                          )}
-                          <div>
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                                selectedCrop === index ? 'bg-white bg-opacity-25 text-white' : 'bg-green-100 text-green-700'
-                              }`}>
-                                #{crop.rank} Best Choice
-                              </span>
-                            </div>
-                            <h3 className="text-2xl font-bold capitalize">{crop.name}</h3>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className={`text-3xl font-bold ${selectedCrop === index ? 'text-white' : 'text-green-600'}`}>
-                            {(crop.confidence * 100).toFixed(1)}%
-                          </div>
-                          <div className={`text-sm font-medium ${selectedCrop === index ? 'text-white text-opacity-90' : 'text-gray-600'}`}>
-                            Confidence Score
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`mt-4 rounded-full h-3 ${selectedCrop === index ? 'bg-white bg-opacity-20' : 'bg-gray-300'}`}>
-                        <div 
-                          className={`rounded-full h-3 transition-all duration-500 ${selectedCrop === index ? 'bg-white shadow-lg' : 'bg-gradient-to-r from-green-500 to-emerald-600'}`}
-                          style={{ width: `${crop.confidence * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Selected Crop Details */}
-                {currentCropDetails && selectedCrop === 0 && (
-                  <div className="space-y-5 pt-4">
-                    <div className="border-t-2 border-gray-200 pt-5">
-                      <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center">
-                        <div className="bg-green-100 p-2 rounded-lg mr-3">
-                          <Leaf className="w-5 h-5 text-green-600" />
-                        </div>
-                        Complete Details for {result.recommended_crop}
-                      </h3>
-                    </div>
-
-                    {/* Growing Information */}
-                    <div className="border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-5 py-4 border-b-2 border-gray-200">
-                        <h4 className="font-bold text-gray-800 text-lg">Growing Information</h4>
-                      </div>
-                      <div className="divide-y divide-gray-200 bg-white">
-                        <div className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition-colors">
-                          <span className="text-gray-600 font-medium">Season:</span>
-                          <span className="font-semibold text-gray-900 text-right">{currentCropDetails.season}</span>
-                        </div>
-                        <div className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition-colors">
-                          <span className="text-gray-600 font-medium">Temperature Range:</span>
-                          <span className="font-semibold text-gray-900 text-right">{currentCropDetails.ideal_temp}</span>
-                        </div>
-                        <div className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition-colors">
-                          <span className="text-gray-600 font-medium">Rainfall Required:</span>
-                          <span className="font-semibold text-gray-900 text-right">{currentCropDetails.ideal_rainfall}</span>
-                        </div>
-                        <div className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition-colors">
-                          <span className="text-gray-600 font-medium">Soil Type:</span>
-                          <span className="font-semibold text-gray-900 text-right">{currentCropDetails.soil_type}</span>
-                        </div>
-                        <div className="flex justify-between items-center px-5 py-4 hover:bg-gray-50 transition-colors">
-                          <span className="text-gray-600 font-medium">Growth Period:</span>
-                          <span className="font-semibold text-gray-900 text-right">{currentCropDetails.growth_period}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Growing Tips */}
-                    <div className="border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-4 border-b-2 border-gray-200">
-                        <h4 className="font-bold text-gray-800 text-lg">Essential Growing Tips</h4>
-                      </div>
-                      <div className="p-5 bg-white">
-                        <ul className="space-y-4">
-                          {currentCropDetails.tips.map((tip, i) => (
-                            <li key={i} className="flex items-start group">
-                              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
-                                <span className="text-green-600 font-bold text-lg">✓</span>
-                              </div>
-                              <span className="text-gray-700 leading-relaxed pt-1">{tip}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Soil Analysis */}
-                    <div className="border-2 border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-5 py-4 border-b-2 border-gray-200">
-                        <h4 className="font-bold text-gray-800 text-lg">Your Soil Analysis Report</h4>
-                      </div>
-                      <div className="p-5 bg-white">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <p className="text-blue-700 text-xs font-bold mb-2 uppercase tracking-wide">Nitrogen Level</p>
-                            <p className="font-bold text-gray-900 text-lg">{result.soil_analysis.nitrogen_level}</p>
-                          </div>
-                          <div className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <p className="text-purple-700 text-xs font-bold mb-2 uppercase tracking-wide">Phosphorus Level</p>
-                            <p className="font-bold text-gray-900 text-lg">{result.soil_analysis.phosphorus_level}</p>
-                          </div>
-                          <div className="border-2 border-pink-200 bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <p className="text-pink-700 text-xs font-bold mb-2 uppercase tracking-wide">Potassium Level</p>
-                            <p className="font-bold text-gray-900 text-lg">{result.soil_analysis.potassium_level}</p>
-                          </div>
-                          <div className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <p className="text-green-700 text-xs font-bold mb-2 uppercase tracking-wide">pH Status</p>
-                            <p className="font-bold text-gray-900 text-lg">{result.soil_analysis.ph_status}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {selectedCrop > 0 && (
-                  <div className="border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-2xl p-5 shadow-md">
-                    <div className="flex items-start">
-                      <div className="bg-amber-200 p-2 rounded-lg mr-3 flex-shrink-0">
-                        <span className="text-2xl">💡</span>
-                      </div>
-                      <div>
-                        <p className="text-amber-900 font-semibold mb-1">Want detailed information?</p>
-                        <p className="text-amber-800">
-                          Click on the <strong className="text-amber-900">#{topCrops[0].rank} Best Choice - {topCrops[0].name}</strong> card above to see complete growing information, essential tips, and your soil analysis report.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+            ))}
           </div>
         </div>
       </div>
+
+     {/* Common Crops Carousel with Flip Cards */}
+<div className="max-w-7xl mx-auto px-4 py-8">
+  <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-100">
+    <div className="flex items-center justify-between mb-10">
+      <div>
+        <h2 className="text-4xl font-bold text-gray-900 flex items-center">
+          <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-3 rounded-xl mr-4">
+            <Sprout className="w-8 h-8 text-white" />
+          </div>
+          Popular Crops Library
+        </h2>
+        <p className="text-gray-600 mt-1 ml-16 text-sm">Explore common crops with ideal growing conditions</p>
+      </div>
+    </div>
+
+    <div className="relative px-4">
+      {/* Navigation Buttons - Enhanced */}
+      <button
+        onClick={prevSlide}
+        className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-br from-green-600 to-emerald-600 text-white p-3 rounded-full hover:from-green-700 hover:to-emerald-700 transition shadow-lg transform hover:scale-110 duration-300 flex items-center justify-center group"
+      >
+        <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 bg-gradient-to-br from-green-600 to-emerald-600 text-white p-3 rounded-full hover:from-green-700 hover:to-emerald-700 transition shadow-lg transform hover:scale-110 duration-300 flex items-center justify-center group"
+      >
+        <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition" />
+      </button>
+
+      {/* Cards Container - Continuous Scroll */}
+      <div className="overflow-hidden">
+        <div 
+          className="flex transition-transform duration-500 ease-in-out gap-6"
+          style={{ transform: `translateX(-${currentSlide * (100 / 3)}%)` }}
+        >
+          {commonCrops.map((crop, idx) => {
+            const isFlipped = flippedCards[idx];
+
+            return (
+              <div key={idx} className="perspective-1000 flex-shrink-0 w-1/3">
+                <div className="h-[480px]">
+                  <div 
+                    className="relative w-full h-full transition-transform duration-700 cursor-pointer"
+                    style={{
+                      transformStyle: 'preserve-3d',
+                      transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                    }}
+                    onClick={() => toggleCard(idx)}
+                  >
+                    {/* Front of Card - Enhanced */}
+                    <div 
+                      className="absolute w-full h-full"
+                      style={{ backfaceVisibility: 'hidden' }}
+                    >
+                      <div className="h-full bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-3xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200 hover:border-green-400 mx-2">
+                        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-green-400 to-emerald-500">
+                          <img 
+                            src={crop.image} 
+                            alt={crop.name} 
+                            className="w-full h-full object-cover hover:scale-110 transition duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        </div>
+                        
+                        <div className="p-5">
+                          <h3 className="font-bold text-xl text-gray-900 mb-2">{crop.name}</h3>
+                          <p className="text-xs text-gray-600 mb-4 leading-relaxed line-clamp-2">{crop.shortDesc}</p>
+                          
+                          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 mb-4 border border-blue-200">
+                            <p className="text-xs font-bold text-blue-900 mb-1 flex items-center">
+                              <Eye className="w-3 h-3 mr-1.5" />
+                              Quick Info
+                            </p>
+                            <p className="text-xs text-blue-800 leading-relaxed line-clamp-2">{crop.description}</p>
+                          </div>
+                          
+                          <button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-2 rounded-lg font-bold text-sm flex items-center justify-center space-x-2 shadow-md transform hover:scale-105 transition duration-300">
+                            <BookOpen className="w-4 h-4" />
+                            <span>Know More</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Back of Card - Enhanced */}
+                    <div 
+                      className="absolute w-full h-full"
+                      style={{ 
+                        backfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)'
+                      }}
+                    >
+                      <div className="h-full bg-gradient-to-br from-indigo-500 via-purple-600 to-purple-700 rounded-3xl p-6 text-white shadow-xl overflow-y-auto mx-2">
+                        <div className="flex items-start justify-between mb-4">
+                          <h3 className="text-2xl font-bold">{crop.name}</h3>
+                          <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/30 flex-shrink-0">
+                            <img 
+                              src={crop.image} 
+                              alt={crop.name} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-3 text-sm">
+                          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition">
+                            <h4 className="font-bold text-xs mb-2 flex items-center text-white">
+                              <ThermometerSun className="w-4 h-4 mr-2" />
+                              CONDITIONS
+                            </h4>
+                            <p className="text-xs text-indigo-100 leading-relaxed">{crop.idealConditions}</p>
+                          </div>
+
+                          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition">
+                            <h4 className="font-bold text-xs mb-2 flex items-center text-white">
+                              <Award className="w-4 h-4 mr-2" />
+                              BENEFITS
+                            </h4>
+                            <p className="text-xs text-indigo-100 leading-relaxed">{crop.benefits}</p>
+                          </div>
+
+                          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/20 transition">
+                            <h4 className="font-bold text-xs mb-2 flex items-center text-white">
+                              <Shield className="w-4 h-4 mr-2" />
+                              TIPS
+                            </h4>
+                            <p className="text-xs text-indigo-100 leading-relaxed">{crop.tips}</p>
+                          </div>
+                        </div>
+
+                        <button className="w-full mt-3 bg-white/20 hover:bg-white/30 text-white py-2 rounded-lg transition font-semibold text-sm flex items-center justify-center space-x-2 border border-white/20">
+                          <ArrowLeft className="w-4 h-4" />
+                          <span>Flip Back</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Slide Indicators - Removed */}
+    </div>
+  </div>
+</div>
+
+      {/* Input Form Section */}
+<div className="max-w-7xl mx-auto px-4 py-8">
+  <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+    <div className="flex items-center justify-between mb-8">
+      <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+        <FlaskConical className="w-8 h-8 mr-3 text-blue-600" />
+        Analyze Soil & Climate
+      </h2>
+      {backendStatus && (
+        <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+          backendStatus.status === 'online' 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {backendStatus.status === 'online' ? '✓ Backend Online' : '✗ Backend Offline'}
+        </div>
+      )}
+    </div>
+
+    {error && (
+      <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3">
+        <AlertTriangle className="w-6 h-6 text-red-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="font-semibold text-red-900">Error</p>
+          <p className="text-red-700">{error}</p>
+        </div>
+      </div>
+    )}
+
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Soil Nutrients */}
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+          <Droplets className="w-5 h-5 mr-2 text-blue-600" />
+          Soil Nutrients (NPK)
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">Measure nutrient levels from soil test reports</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { name: 'N', label: 'Nitrogen (mg/kg)', icon: '🟢', example: 'e.g., 90' },
+            { name: 'P', label: 'Phosphorus (mg/kg)', icon: '🟡', example: 'e.g., 42' },
+            { name: 'K', label: 'Potassium (mg/kg)', icon: '🔵', example: 'e.g., 43' }
+          ].map(field => (
+            <div key={field.name}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <span className="mr-2">{field.icon}</span>{field.label}
+              </label>
+              <input
+                type="number"
+                name={field.name}
+                value={formData[field.name]}
+                onChange={handleChange}
+                placeholder={field.example}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-gray-100 placeholder-gray-500"
+                step="0.1"
+              />
+              <p className="text-xs text-gray-500 mt-1">Range: 0-200 mg/kg</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Climate Conditions */}
+      <div>
+        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+          <ThermometerSun className="w-5 h-5 mr-2 text-orange-600" />
+          Climate Conditions
+        </h3>
+        <p className="text-sm text-gray-600 mb-4">Input average weather and soil parameters</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[
+            { name: 'temperature', label: 'Temperature (°C)', icon: '🌡️', example: 'e.g., 22', range: '5-40°C' },
+            { name: 'humidity', label: 'Humidity (%)', icon: '💧', example: 'e.g., 70', range: '20-100%' },
+            { name: 'ph', label: 'Soil pH', icon: '⚗️', example: 'e.g., 6.5', range: '4-8.5' },
+            { name: 'rainfall', label: 'Rainfall (mm)', icon: '🌧️', example: 'e.g., 200', range: '0-1000mm' }
+          ].map(field => (
+            <div key={field.name}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <span className="mr-2">{field.icon}</span>{field.label}
+              </label>
+              <input
+                type="number"
+                name={field.name}
+                value={formData[field.name]}
+                onChange={handleChange}
+                placeholder={field.example}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none transition bg-gray-50 hover:bg-gray-100 placeholder-gray-500"
+                step="0.1"
+              />
+              <p className="text-xs text-gray-500 mt-1">Range: {field.range}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Sample Data Buttons */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">⚡ Quick Fill (Sample Data)</h3>
+        <div className="flex flex-wrap gap-3">
+          {Object.keys(sampleData).map(type => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => loadSample(type)}
+              className="px-6 py-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900 font-semibold rounded-xl hover:from-gray-200 hover:to-gray-300 transition border border-gray-300 transform hover:scale-105"
+            >
+              Load {type.charAt(0).toUpperCase() + type.slice(1)} Data
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <div className="flex justify-center pt-4">
+        <button
+          type="submit"
+          disabled={loading}
+          className={`px-12 py-4 rounded-xl font-bold text-white text-lg flex items-center space-x-3 transition transform ${
+            loading
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 hover:scale-105 shadow-xl'
+          }`}
+        >
+          <Activity className="w-6 h-6" />
+          <span>{loading ? 'Analyzing...' : 'Get Recommendation'}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+      {/* Results Section */}
+      {result && (
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                <Trophy className="w-8 h-8 mr-3 text-yellow-600" />
+                Recommendation Results
+              </h2>
+              <button
+                onClick={() => setResult(null)}
+                className="px-4 py-2 bg-red-100 text-red-700 font-semibold rounded-xl hover:bg-red-200 transition"
+              >
+                Clear Results
+              </button>
+            </div>
+
+            {/* Top Crops Tabs */}
+            <div className="mb-8">
+              <div className="flex space-x-2 border-b-2 border-gray-200 mb-6">
+                {topCrops.map((crop, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedCrop(idx)}
+                    className={`px-6 py-3 font-semibold transition border-b-4 ${
+                      selectedCrop === idx
+                        ? 'text-green-600 border-green-600'
+                        : 'text-gray-600 border-transparent hover:text-gray-900'
+                    }`}
+                  >
+                    {idx === 0 ? `🥇 ${crop.name}` : `Rank ${crop.rank}: ${crop.name}`}
+                  </button>
+                ))}
+              </div>
+
+              {/* Confidence Display */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-gray-700">Recommendation Confidence</span>
+                  <span className="text-2xl font-bold text-green-600">{(topCrops[selectedCrop]?.confidence * 100).toFixed(1)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${topCrops[selectedCrop]?.confidence * 100}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Crop Details */}
+              {currentCropDetails && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                    <h4 className="font-bold text-blue-900 mb-4 flex items-center">
+                      <Microscope className="w-5 h-5 mr-2" />
+                      Description
+                    </h4>
+                    <p className="text-blue-800">{currentCropDetails.description}</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                    <h4 className="font-bold text-green-900 mb-4 flex items-center">
+                      <Leaf className="w-5 h-5 mr-2" />
+                      Growing Tips
+                    </h4>
+                    <p className="text-green-800">{currentCropDetails.growing_tips}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+     {/* Back Button - Top Right (Sticky) */}
+<div className="fixed top-2 right-6 z-50">
+  <button
+    onClick={onBack}
+    className="group relative px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 border border-green-500 hover:border-green-400"
+  >
+    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition duration-300" />
+    <span>Back</span>
+    
+    {/* Animated background glow */}
+    <div className="absolute inset-0 bg-gradient-to-r from-green-400/30 to-emerald-400/30 rounded-full opacity-0 group-hover:opacity-100 transition duration-300 blur-lg -z-10"></div>
+  </button>
+</div>
     </div>
   );
 };
